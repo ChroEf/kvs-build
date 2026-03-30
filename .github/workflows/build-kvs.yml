@@ -1,0 +1,60 @@
+name: Build KVS aarch64 libs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Create output directory
+        run: mkdir -p ${{ github.workspace }}/output
+
+      - name: Build KVS v3.5.0 for aarch64
+        run: |
+          docker run --rm --platform linux/arm64 \
+            -v ${{ github.workspace }}/output:/output \
+            debian:bookworm bash -c "
+              set -e
+              apt-get update -q
+              apt-get install -y -q \
+                cmake g++ git pkg-config \
+                libssl-dev libcurl4-openssl-dev \
+                liblog4cplus-dev \
+                libgstreamer1.0-dev \
+                libgstreamer-plugins-base1.0-dev \
+                ca-certificates
+
+              git clone --branch v3.5.0 \
+                https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp.git /kvs-sdk
+              cd /kvs-sdk
+              git submodule update --init --recursive
+
+              mkdir build && cd build
+              cmake .. \
+                -DBUILD_GSTREAMER_PLUGIN=ON \
+                -DBUILD_DEPENDENCIES=OFF \
+                -DCMAKE_BUILD_TYPE=Release
+              make -j2
+
+              echo '=== Built .so files ==='
+              find . -name '*.so*' | sort
+
+              cp -P libKinesisVideoProducer.so* /output/ 2>/dev/null || true
+              find . -name 'libcproducer*' -exec cp -P {} /output/ \;
+
+              echo '=== Output ==='
+              ls -la /output/
+            "
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kvs-libs-aarch64-v3.5.0
+          path: output/
+          if-no-files-found: error
