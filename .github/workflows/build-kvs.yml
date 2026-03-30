@@ -42,13 +42,13 @@ jobs:
                 -DCMAKE_BUILD_TYPE=Release
               make -j2
 
-              echo '=== Built .so files ==='
-              find . -name '*.so*' | sort
+              echo '=== All built .so files ==='
+              find /kvs-sdk/build -name '*.so*' | sort
 
-              cp -P libKinesisVideoProducer.so* /output/ 2>/dev/null || true
-              find . -name 'libcproducer*' -exec cp -P {} /output/ \;
+              echo '=== Copying all .so files to output ==='
+              find /kvs-sdk/build -name '*.so*' -exec cp -P {} /output/ \;
 
-              echo '=== Output ==='
+              echo '=== Output contents ==='
               ls -la /output/
             "
 
