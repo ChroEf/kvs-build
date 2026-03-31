@@ -28,7 +28,7 @@ jobs:
                 liblog4cplus-dev \
                 libgstreamer1.0-dev \
                 libgstreamer-plugins-base1.0-dev \
-                ca-certificates
+                ca-certificates m4
 
               git clone --branch v3.6.0 \
                 https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp.git /kvs-sdk
