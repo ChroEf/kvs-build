@@ -30,7 +30,7 @@ jobs:
                 libgstreamer-plugins-base1.0-dev \
                 ca-certificates
 
-              git clone --branch v3.5.0 \
+              git clone --branch v3.6.0 \
                 https://github.com/awslabs/amazon-kinesis-video-streams-producer-sdk-cpp.git /kvs-sdk
               cd /kvs-sdk
               git submodule update --init --recursive
@@ -55,6 +55,6 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: kvs-libs-aarch64-v3.5.0
+          name: kvs-libs-aarch64-v3.6.0
           path: output/
           if-no-files-found: error
